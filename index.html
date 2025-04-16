@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Apply for Digital Citizenship</title>
+  <title>Apply for Sweet Potato Citizenship</title>
   <style>
     body {
       font-family: 'Arial', sans-serif;
@@ -73,7 +73,7 @@
   <div class="container">
     <h1>Apply for Digital Citizenship</h1>
     
-    <form id="citizenship-form">
+    <form id="citizenship-form" action="https://formspree.io/f/meoawenn" method="POST">
       <label for="name">Full Name:</label>
       <input type="text" id="name" name="name" required>
 
@@ -166,9 +166,27 @@
         passInfo.innerHTML = `<p>Thank you for applying for full-time citizenship, ${name}. We will review your application.</p>`;
       }
 
-      // Send the unique number to your email (you would integrate this with a service like Formspree or email API)
-      // You can also save it to a database or send a message to your backend system.
-      console.log(`Unique Number for ${name}: ${uniqueNumber}`);
+      // Prepare email content
+      const emailContent = {
+        subject: `New Application for Digital Citizenship: ${name}`,
+        body: `Name: ${name}\nNationality: ${nationality}\nPass Type: ${type}\nUnique Number: ${uniqueNumber}\nQR Code URL: ${qrCodeUrl}`
+      };
+
+      // Send email through Formspree (you will need to replace with your own Formspree endpoint)
+      fetch("https://formspree.io/f/meoawenn", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(emailContent)
+      }).then(response => {
+        if (response.ok) {
+          console.log("Email sent successfully!");
+        } else {
+          console.log("Error sending email");
+        }
+      });
+      
       // Email service logic would go here
     });
   </script>
