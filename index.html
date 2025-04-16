@@ -2,88 +2,116 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Apply for Digital Citizenship</title>
   <style>
     body {
-      font-family: sans-serif;
-      max-width: 600px;
-      margin: 2rem auto;
-      padding: 1rem;
+      font-family: 'Arial', sans-serif;
+      background-color: #f4f7fc;
+      margin: 0;
+      padding: 0;
+      color: #333;
+    }
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 2rem;
+      background-color: #fff;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      border-radius: 8px;
     }
     h1 {
       text-align: center;
+      color: #333;
+      margin-bottom: 2rem;
     }
     label {
       display: block;
-      margin-top: 1rem;
+      font-size: 1rem;
+      margin-bottom: 0.5rem;
+      font-weight: bold;
     }
-    input, textarea, select {
+    input, textarea, select, button {
       width: 100%;
-      padding: 0.5rem;
-      margin-top: 0.25rem;
-      box-sizing: border-box;
-    }
-    button {
-      margin-top: 1.5rem;
-      padding: 0.75rem 1.5rem;
+      padding: 1rem;
+      margin-bottom: 1rem;
+      border: 1px solid #ccc;
+      border-radius: 4px;
       font-size: 1rem;
     }
-    footer {
+    input[type="email"], input[type="text"], select {
+      background-color: #f9f9f9;
+    }
+    button {
+      background-color: #4CAF50;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+      border: none;
+    }
+    button:hover {
+      background-color: #45a049;
+    }
+    .footer {
       margin-top: 2rem;
       font-size: 0.9rem;
-      color: #555;
+      color: #888;
       text-align: center;
     }
+    .pass-info {
+      text-align: center;
+      font-size: 14px;
+      margin-top: 20px;
+    }
   </style>
-  <!-- Add jsPDF library -->
+  <!-- Add jsPDF and QRCode libraries -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode.js/1.0.0/qrcode.min.js"></script>
 </head>
 <body>
 
-  <h1>Apply for Digital Citizenship</h1>
+  <div class="container">
+    <h1>Apply for Digital Citizenship</h1>
+    
+    <form id="citizenship-form">
+      <label for="name">Full Name:</label>
+      <input type="text" id="name" name="name" required>
 
-  <form id="citizenship-form">
-    <label>
-      Full Name:
-      <input type="text" name="name" required>
-    </label>
+      <label for="email">Email Address:</label>
+      <input type="email" id="email" name="email" required>
 
-    <label>
-      Email Address:
-      <input type="email" name="email" required>
-    </label>
+      <label for="nationality">Nationality:</label>
+      <input type="text" id="nationality" name="nationality" required>
 
-    <label>
-      Nationality:
-      <input type="text" name="nationality" required>
-    </label>
-
-    <label>
-      Type of Pass:
-      <select name="type" required>
+      <label for="type">Type of Pass:</label>
+      <select id="type" name="type" required>
         <option value="citizen">Full-Time Citizen</option>
         <option value="visitor">90-Day Visitor</option>
       </select>
-    </label>
 
-    <label>
-      Message (optional):
-      <textarea name="message" placeholder="Write anything else you'd like to include..."></textarea>
-    </label>
+      <label for="message">Message (Optional):</label>
+      <textarea id="message" name="message" placeholder="Write anything else you'd like to include..."></textarea>
 
-    <button type="submit">Submit Application</button>
-  </form>
+      <button type="submit">Submit Application</button>
+    </form>
 
-  <footer>
-    Issued by Sweet Potato Minister for Trade, Justice and Foreign Affairs Office.
-  </footer>
+    <div class="pass-info" id="pass-info"></div>
+
+    <footer class="footer">
+      Issued by Sweet Potato Minister for Trade, Justice and Foreign Affairs Office.
+    </footer>
+  </div>
 
   <script>
     // jsPDF generation function for creating the pass
-    function generatePDF(name, nationality, type) {
+    function generatePDF(name, nationality, type, uniqueNumber) {
       const { jsPDF } = window.jspdf;
       const doc = new jsPDF();
-      
+
+      // Add the Seal image (you need to have an image URL for the seal)
+      const sealImage = 'path_to_your_seal_image.jpg'; // Update this with your seal's URL
+      doc.addImage(sealImage, 'JPEG', 160, 10, 40, 40); // Adjust positioning and size as necessary
+
       // Add title and header information
       doc.setFontSize(18);
       doc.text("Digital Citizenship Pass", 20, 30);
@@ -92,11 +120,26 @@
       doc.text(`Nationality: ${nationality}`, 20, 60);
       doc.text(`Pass Type: ${type}`, 20, 70);
 
+      // Add QR code for unique number (linked to URL)
+      const qrCodeUrl = `https://your-verification-url.com/verify/${uniqueNumber}`; // URL to verify pass
+      doc.addImage(generateQRCode(qrCodeUrl), 'PNG', 20, 80, 40, 40); // Adjust positioning and size as necessary
+
       // Add footer information
-      doc.text("Issued by Sweet Potato Minister for Trade, Justice and Foreign Affairs Office", 20, 90);
+      doc.text("Issued by Sweet Potato Minister for Trade, Justice and Foreign Affairs Office", 20, 100);
 
       // Save PDF with a unique name
       doc.save(`${name}_Digital_Citizenship_Pass.pdf`);
+    }
+
+    // Function to generate QR code image
+    function generateQRCode(url) {
+      const qr = new QRCode(document.createElement("div"), {
+        text: url,
+        width: 128,
+        height: 128
+      });
+      const qrImage = qr._oDrawing._elCanvas.toDataURL("image/png");
+      return qrImage;
     }
 
     // Handle form submission
@@ -109,14 +152,24 @@
       const nationality = formData.get("nationality");
       const type = formData.get("type");
 
+      // Generate a unique number for the pass
+      const uniqueNumber = Math.floor(Math.random() * 1000000); // Generates a random number (can be replaced with a better system)
+
+      // Display a thank you message
+      const passInfo = document.getElementById("pass-info");
+
       // Check if the user selected a 90-day visitor pass
       if (type === "visitor") {
-        // Generate the PDF for 90-day visitor
-        generatePDF(name, nationality, "90-Day Visitor");
+        passInfo.innerHTML = `<p>Thank you, ${name}. Your 90-Day Visitor pass is being generated!</p>`;
+        generatePDF(name, nationality, "90-Day Visitor", uniqueNumber);
       } else {
-        alert("Thank you for applying for full-time citizenship!");
-        // Handle full-time citizenship or other actions
+        passInfo.innerHTML = `<p>Thank you for applying for full-time citizenship, ${name}. We will review your application.</p>`;
       }
+
+      // Send the unique number to your email (you would integrate this with a service like Formspree or email API)
+      // You can also save it to a database or send a message to your backend system.
+      console.log(`Unique Number for ${name}: ${uniqueNumber}`);
+      // Email service logic would go here
     });
   </script>
 
