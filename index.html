@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Apply for Digital Citizenship</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      max-width: 600px;
+      margin: 2rem auto;
+      padding: 1rem;
+    }
+    h1 {
+      text-align: center;
+    }
+    label {
+      display: block;
+      margin-top: 1rem;
+    }
+    input, textarea, select {
+      width: 100%;
+      padding: 0.5rem;
+      margin-top: 0.25rem;
+      box-sizing: border-box;
+    }
+    button {
+      margin-top: 1.5rem;
+      padding: 0.75rem 1.5rem;
+      font-size: 1rem;
+    }
+    footer {
+      margin-top: 2rem;
+      font-size: 0.9rem;
+      color: #555;
+      text-align: center;
+    }
+  </style>
+  <!-- Add jsPDF library -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+</head>
+<body>
+
+  <h1>Apply for Digital Citizenship</h1>
+
+  <form id="citizenship-form">
+    <label>
+      Full Name:
+      <input type="text" name="name" required>
+    </label>
+
+    <label>
+      Email Address:
+      <input type="email" name="email" required>
+    </label>
+
+    <label>
+      Nationality:
+      <input type="text" name="nationality" required>
+    </label>
+
+    <label>
+      Type of Pass:
+      <select name="type" required>
+        <option value="citizen">Full-Time Citizen</option>
+        <option value="visitor">90-Day Visitor</option>
+      </select>
+    </label>
+
+    <label>
+      Message (optional):
+      <textarea name="message" placeholder="Write anything else you'd like to include..."></textarea>
+    </label>
+
+    <button type="submit">Submit Application</button>
+  </form>
+
+  <footer>
+    Issued by Sweet Potato Minister for Trade, Justice and Foreign Affairs Office.
+  </footer>
+
+  <script>
+    // jsPDF generation function for creating the pass
+    function generatePDF(name, nationality, type) {
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF();
+      
+      // Add title and header information
+      doc.setFontSize(18);
+      doc.text("Digital Citizenship Pass", 20, 30);
+      doc.setFontSize(12);
+      doc.text(`Name: ${name}`, 20, 50);
+      doc.text(`Nationality: ${nationality}`, 20, 60);
+      doc.text(`Pass Type: ${type}`, 20, 70);
+
+      // Add footer information
+      doc.text("Issued by Sweet Potato Minister for Trade, Justice and Foreign Affairs Office", 20, 90);
+
+      // Save PDF with a unique name
+      doc.save(`${name}_Digital_Citizenship_Pass.pdf`);
+    }
+
+    // Handle form submission
+    document.getElementById("citizenship-form").addEventListener("submit", function(e) {
+      e.preventDefault();
+
+      // Get form data
+      const formData = new FormData(e.target);
+      const name = formData.get("name");
+      const nationality = formData.get("nationality");
+      const type = formData.get("type");
+
+      // Check if the user selected a 90-day visitor pass
+      if (type === "visitor") {
+        // Generate the PDF for 90-day visitor
+        generatePDF(name, nationality, "90-Day Visitor");
+      } else {
+        alert("Thank you for applying for full-time citizenship!");
+        // Handle full-time citizenship or other actions
+      }
+    });
+  </script>
+
+</body>
+</html>
